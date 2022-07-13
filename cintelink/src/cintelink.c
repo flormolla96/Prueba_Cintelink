@@ -20,7 +20,6 @@ void log_transactions(char*[], int* , int);
 time_t string_to_seconds (char*[], int);
 
 int main(void) {
-	puts("!!!Hello World!!!"); /* prints !!!Hello World!!! */
 	Uart();
 	return EXIT_SUCCESS;
 }
@@ -29,7 +28,7 @@ void Uart(void) {
 	//datos que provendrian de uart
 	char *datos_uart[5]={{"12/08/1996 17:23:20AAA 1111 P123422"},{"13/08/2001 14:34:20AAA 1111 P123422"},
 			{"25/04/1997 13:25:30AAA 1111 P123422"},{"25/08/2022 13:25:30AAA 1111 P123422"},{"25/04/2020 13:25:30AAA 1111 P123422"}};
-	//char datos_uart[]={"[23/02/2020 04:03:20 AAA 1111 P123422]"};
+
 	char *buffer[100];
 	char log[100];
 	int trans_count=0;
@@ -37,6 +36,7 @@ void Uart(void) {
 
 	time_t inicio = time(NULL);
 
+	//se copia el buffer de uart en otro por 30seg o 5 transacciones
 	do{
 		buffer[trans_count]=datos_uart[trans_count];
 
@@ -65,6 +65,7 @@ time_t string_to_seconds(char *timestamp_str[], int trans)
 	}
 
 	for(int i=0; i<trans; i++){
+		//se pasa la fecha y hora a segundos
 		r[i] = sscanf(timestamp_str[i], "%d/%d/%d %d:%d:%d", &tm[i].tm_mday, &tm[i].tm_mon, &tm[i].tm_year, &tm[i].tm_hour, &tm[i].tm_min, &tm[i].tm_sec);
 		if (r[i] != 6) {
 			return (time_t)-1;
@@ -78,9 +79,10 @@ time_t string_to_seconds(char *timestamp_str[], int trans)
 		seconds2[i] = mktime(&tm[i]);
 	}
 
+	//ordena el buffer de fecha mas vieja a nueva
 	for (int i = 0; i < trans ; i++) {
 		for (int j = i + 1; j < trans; j++) {
-			if(seconds[i]>seconds[j]){// cambia "<" a ">" para cambiar la manera de ordenar
+			if(seconds[i]>seconds[j]){
 				aux=seconds[i];
 				seconds[i]=seconds[j];
 				seconds[j]=aux;
@@ -88,6 +90,7 @@ time_t string_to_seconds(char *timestamp_str[], int trans)
 		}
 	}
 
+	//vector con posicion de el orden del buffer
 	for (int i = 0; i < trans ; i++) {
 		for (int j = 0; j < trans; j++) {
 			if (seconds[i] == seconds2[j])
@@ -107,12 +110,14 @@ void log_transactions(char *data[], int *log, int trans_count){
 	    int count=0;
 	    char *trama[trans_count];
 
+	    //se almacenan en bufferr en orden
 	   for (int i = 0; i < trans_count ; i++) {
 	       	bufferr[i]=data[*log];
 	       	log++;
 	   }
 
-	    for (int i = 0; i < trans_count ; i++) {
+	   // se crea trama final
+	   for (int i = 0; i < trans_count ; i++) {
 	    	strcpy(logg, "[");
 	    	strncat(logg, bufferr[count], 19);
 	    	strcat(logg, "] id: ");
@@ -127,6 +132,6 @@ void log_transactions(char *data[], int *log, int trans_count){
 	    	trama[count]=logg;
 	    	count++;
 	    }
-	    puts("!!!Hello World!!!");
+	    puts("Finn");
 }
 
